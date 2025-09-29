@@ -6,6 +6,4 @@ $usuario = 'root';
 $senha = '';        
 $banco = 'FlowerShop';
 
-
-
 ?>
