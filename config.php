@@ -1,9 +1,7 @@
 <?php
 
 //VARIAVEIS DO BANCO DE DADOS
-$servidor ='localhost';
+$servidor = 'localhost';
 $usuario = 'root';
-$senha = '';        
+$senha = '';
 $banco = 'FlowerShop';
-
-?>

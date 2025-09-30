@@ -2,7 +2,7 @@
 @session_start();
 
 //VERIFICAR SE O USUARIO È ADMINISTRADOR
-if(@$_SESSION['nivel_usuario'] != 'Administrador'){
+if (@$_SESSION['nivel_usuario'] != 'Administrador') {
     echo "<script>alert('Acesso negado! Você não é um administrador.');</script>";
     echo "<script>window.location='../index.php'</script>";
 }
@@ -14,6 +14,3 @@ echo "Nível do usuário: " . $_SESSION['nivel_usuario'];
 ?>
 
 <a href="../logout.php">Sair</a>
-
-
-

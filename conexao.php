@@ -1,6 +1,6 @@
 <?php
 
-require_once ('config.php');
+require_once('config.php');
 
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -11,5 +11,3 @@ try {
 } catch (PDOException $e) {
     echo 'Erro ao conectar com o banco de dados: ' . $e->getMessage();
 }
-
-?>
