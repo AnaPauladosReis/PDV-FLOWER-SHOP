@@ -1,3 +1,7 @@
+<?php
+require_once('../conexao.php');
+?>
+
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link href="login.css" rel="stylesheet">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
@@ -18,11 +22,11 @@
                             <h3 class="text-center text-info">Login</h3>
                             <div class="form-group">
                                 <label for="username" class="text-info">Usuário:</label><br>
-                                <input type="text" name="email" id="username" class="form-control" placeholder="Insira seu email" required>
+                                <input type="text" name="email" id="username" class="form-control" placeholder="Insira seu email" required="">
                             </div>
                             <div class="form-group">
                                 <label for="password" class="text-info">Senha:</label><br>
-                                <input type="password" name="senha" id="password" class="form-control" placeholder="Insira sua senha" required>
+                                <input type="password" name="senha" id="password" class="form-control" placeholder="Insira sua senha" required="">
                             </div>
                             <div class="form-group">
                                 <input type="submit" name="submit" class="btn btn-info btn-md" value="Logar">
@@ -49,22 +53,65 @@
                 </button>
             </div>
 
+
+            <form method="post">
             <div class="modal-body">
+            <div class="form-group">
+                    <label for="exampleInputEmail1">Nome</label>
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="nomeCad" aria-describedby="emailHelp" required="">
+                </div>
+
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                    <label for="exampleInputEmail1">Email</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" name="emailCad" aria-describedby="emailHelp" required="">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1">
+                    <label for="exampleInputPassword1">Senha</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" name="senhaCad" required="">
                 </div>
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Salvar</button>
+               <button type="submit" class="btn btn-primary" name="btn-cadastrar">Salvar</button>
+            
             </div>
+            </form>
         </div>
     </div>
 </div>
+
+<?php
+
+if(isset($_POST['btn-cadastrar'])){
+
+    $nome = $_POST['nomeCad'];
+    $email = $_POST['emailCad'];
+    $senha = $_POST['senhaCad'];
+    $nivel = 'Cliente';
+
+    //VERIFICAR SE O EMAIL JÁ ESTÁ CADASTRADO
+    $query = $pdo->prepare("SELECT * FROM usuarios WHERE email = :email");
+    $query->bindValue(':email', $email);
+    $query->execute();
+    $res = $query->fetchAll(PDO::FETCH_ASSOC);
+    $total_reg = @count($res);
+
+    if($total_reg > 0){
+        echo "<script>alert('Este email já está cadastrado!');</script>";
+        echo "<script>window.location='index.php'</script>";
+        exit();
+    }
+
+    $query = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, nivel) VALUES (:nome, :email, :senha, :nivel)");
+    $query->bindValue(':nome', $nome);
+    $query->bindValue(':email', $email);
+    $query->bindValue(':senha', $senha);
+    $query->bindValue(':nivel', $nivel);
+    $query->execute();
+
+    echo "<script>alert('Cadastro realizado com sucesso!');</script>";
+    echo "<script>window.location='index.php'</script>";
+}
+
+?>
