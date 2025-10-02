@@ -1,29 +1,25 @@
-<?php
+<?php 
+
 require_once("../../conexao.php");
 @session_start();
 
-//VERIFICAR SE O USUARIO È ADMINISTRADOR
-if (@$_SESSION['nivel_usuario'] != 'Administrador') {
-    echo "<script>alert('Acesso negado! Você não é um administrador.');</script>";
-    echo "<script>window.location='../index.php'</script>";
+//VERIFICAR SE O USUÁRIO LOGADO É UM ADMINISTRADOR
+if(@$_SESSION['nivel_usuario'] != 'Administrador'){
+	echo "<script language='javascript'>window.location='../index.php'</script>";
 }
 
 /*
-echo "Painel administrativo - FLOWER SHOP <p>";
-echo "Nome do usuário: " . $_SESSION['nome_usuario'] . "<p>";
-echo "Nível do usuário: " . $_SESSION['nivel_usuario'];
+echo 'Painel Administrativo <p>';
+echo 'Nome do Usuário : ' . $_SESSION['nome_usuario'] .' e o nível do usuário é ' . $_SESSION['nivel_usuario'];
 
-<a href="../logout.php">Sair</a>
 */
 
 ?>
 
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo</title>
+	<title>Painél Administrativo</title>
 </head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
@@ -31,7 +27,7 @@ echo "Nível do usuário: " . $_SESSION['nivel_usuario'];
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="index.php">Administrador</a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +62,7 @@ echo "Nível do usuário: " . $_SESSION['nivel_usuario'];
 		</div>
 	</nav>
 
-<div class="container">
+	<div class="container">
 		<a href="index.php?funcao=novo" class="btn btn-secondary mt-4" type="button">Novo Usuário</a>
 
 		<?php
@@ -146,3 +142,215 @@ echo "Nível do usuário: " . $_SESSION['nivel_usuario'];
 
 </body>
 </html>
+
+
+
+
+<div class="modal fade" id="modalCadastrar" tabindex="-1" data-bs-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<?php 
+				if(@$_GET['funcao'] == 'editar'){ 
+
+					$titulo_modal = "Editar Registro";
+					$botao_modal = "btn-editar";
+
+					$query = $pdo->query("SELECT * FROM usuarios where id = '$_GET[id]'");
+					$res = $query->fetchAll(PDO::FETCH_ASSOC);
+					$nome_ed = $res[0]['nome'];
+					$email_ed = $res[0]['email'];
+					$senha_ed = $res[0]['senha'];
+					$nivel_ed = $res[0]['nivel'];
+
+				}else{
+					$titulo_modal = "Inserir Registro";
+					$botao_modal = "btn-cadastrar";
+				}
+				?>
+				<h5 class="modal-title"><?php echo $titulo_modal ?></h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form method="POST">
+				<div class="modal-body">
+
+					<div class="form-group mb-2">
+						<label for="exampleInputEmail1">Nome</label>
+						<input type="text" class="form-control mt-1" id="exampleInputEmail1" name="nomeCad" aria-describedby="emailHelp" required value="<?php echo @$nome_ed ?>">
+
+					</div>
+
+					<div class="form-group mb-2">
+						<label for="exampleInputEmail1">Email </label>
+						<input type="email" class="form-control mt-1" id="exampleInputEmail1" name="emailCad" aria-describedby="emailHelp" required value="<?php echo @$email_ed ?>">
+
+					</div>
+
+					<div class="form-group mb-2">
+						<label for="exampleInputPassword1">Senha</label>
+						<input type="text" class="form-control mt-1" name="senhaCad" id="exampleInputPassword1" required value="<?php echo @$senha_ed ?>">
+					</div>
+
+					<div class="form-group mb-2">
+						<label for="exampleInputPassword1">Nivel</label>
+						<select class="form-select mt-1" aria-label="Default select example" name="nivelCad">
+							
+							<option <?php if(@$nivel_ed == 'Cliente'){ ?> selected <?php } ?>  value="Cliente">Cliente</option>
+
+							<option <?php if(@$nivel_ed == 'Administrador'){ ?> selected <?php } ?>  value="Administrador">Administrador</option>
+							
+							<option <?php if(@$nivel_ed == 'Vendedor'){ ?> selected <?php } ?>  value="Vendedor">Vendedor</option>
+
+							<option <?php if(@$nivel_ed == 'Tesoureiro'){ ?> selected <?php } ?>  value="Tesoureiro">Tesoureiro</option>
+						</select>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+					<button name="<?php echo $botao_modal ?>" type="submit" class="btn btn-primary">Salvar</button>
+
+					<input type="hidden" value="<?php echo @$email_ed ?>" name="antigo">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+<div class="modal" tabindex="-1" id="modalDeletar">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Excluir Registro</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>Deseja Realmente Excluir este registro?</p>
+			</div>
+			<div class="modal-footer">
+				<form method="POST">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button name="btn-deletar" type="submit" class="btn btn-danger">Excluir</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+<?php 
+if(isset($_POST['btn-cadastrar'])){
+
+	$query_v = $pdo->prepare("SELECT * FROM usuarios where email = :email ");
+	$query_v->bindValue(":email", $_POST['emailCad']);
+	$query_v->execute();
+
+	$res_v = $query_v->fetchAll(PDO::FETCH_ASSOC);
+	$total_reg_v = @count($res_v);
+	
+	if($total_reg_v > 0){
+		echo "<script language='javascript'>window.alert('O Usuário já está cadastrado!!')</script>";
+		exit();
+	}
+
+	$query = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, nivel) VALUES (:nome, :email, :senha, :nivel)");
+	$query->bindValue(":nome", $_POST['nomeCad']);
+	$query->bindValue(":email", $_POST['emailCad']);
+	$query->bindValue(":senha", $_POST['senhaCad']);
+	$query->bindValue(":nivel", $_POST['nivelCad']);
+	$query->execute();
+
+	echo "<script language='javascript'>window.alert('Cadastrado com Sucesso')</script>";
+	echo "<script language='javascript'>window.location='index.php'</script>";
+
+}
+?>
+
+
+
+
+
+<?php 
+if(isset($_POST['btn-editar'])){
+
+	if($_POST['antigo'] != $_POST['emailCad']){
+		$query_v = $pdo->prepare("SELECT * FROM usuarios where email = :email ");
+		$query_v->bindValue(":email", $_POST['emailCad']);
+		$query_v->execute();
+
+		$res_v = $query_v->fetchAll(PDO::FETCH_ASSOC);
+		$total_reg_v = @count($res_v);
+
+		if($total_reg_v > 0){
+			echo "<script language='javascript'>window.alert('O Usuário já está cadastrado!!')</script>";
+			exit();
+		}
+	}
+
+	$query = $pdo->prepare("UPDATE usuarios SET nome = :nome, email = :email, senha = :senha, nivel = :nivel WHERE id = :id");
+	$query->bindValue(":nome", $_POST['nomeCad']);
+	$query->bindValue(":email", $_POST['emailCad']);
+	$query->bindValue(":senha", $_POST['senhaCad']);
+	$query->bindValue(":nivel", $_POST['nivelCad']);
+	$query->bindValue(":id", $_GET['id']);
+	$query->execute();
+
+	echo "<script language='javascript'>window.alert('Editado com Sucesso')</script>";
+	echo "<script language='javascript'>window.location='index.php'</script>";
+
+}
+?>
+
+
+
+
+
+<?php 
+if(isset($_POST['btn-deletar'])){
+
+	
+	$query = $pdo->query("DELETE from usuarios WHERE id = '$_GET[id]'");
+	
+	echo "<script language='javascript'>window.location='index.php'</script>";
+
+}
+?>
+
+
+
+<?php 
+if(@$_GET['funcao'] == 'novo'){ ?>
+	<script>
+		var myModal = new bootstrap.Modal(document.getElementById('modalCadastrar'), {  keyboard: false });
+		myModal.show();
+
+	</script>
+<?php } ?>
+
+
+
+<?php 
+if(@$_GET['funcao'] == 'editar'){ ?>
+	<script>
+		var myModal = new bootstrap.Modal(document.getElementById('modalCadastrar'), {  keyboard: false });
+		myModal.show();
+
+	</script>
+<?php } ?>
+
+
+
+<?php 
+if(@$_GET['funcao'] == 'deletar'){ ?>
+	<script>
+		var myModal = new bootstrap.Modal(document.getElementById('modalDeletar'), {  keyboard: false });
+		myModal.show();
+
+	</script>
+<?php } ?>
